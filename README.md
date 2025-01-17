@@ -1,8 +1,8 @@
-# StarDust Net
+# Star Dust Net
 ### Version Support -- Godot 4.2 
-### Very Alpha a lot of it can change with updates
-This addons goal is to simplify the creation of multiplayer peer to peer server autheritative games.\
-It would be considered a unnecessary complication for basic peer to peer games but if you want better control of data packets on the back and front end hopefully this will help
+### Very Alpha, a lot of it can change with updates
+This addons goal is to simplify the creation of multiplayer peer to peer server authoritative games.\
+It would be considered an unnecessary complication for basic peer-to-peer games, but if you want better control of data packets on the back and front end, hopefully this will help.
 
 
 # Core Concepts
@@ -12,10 +12,10 @@ There are 3 autoload nodes that can be used to interact with the different parts
 * CreationController
 
 ## NetController
-This is the heart of StarDust Net. it is what you will call when you want to start and stop the client/server application
+This is the heart of Star Dust Net. it is what you will call when you want to start and stop the client/server application.
 
 ## FrameSyncController
-This is the comunication core. It acts as a throughput for ``SyncData`` to be able to made it to different ``SyncNodes``.\
+This is the comunication core. It acts as a throughput for ``SyncData`` to be able to transfer between two ``SyncNodes``.\
 
 
 #### SyncData
@@ -25,13 +25,13 @@ It also exposes a serialize and deserialize function to be able to transmit the 
 
 
 #### SyncNode
-This is a genertic destination object that takes in ``SyncData`` it is also meant to be overwritten for each specific implementation.\
+This is a generic destination object that takes in ``SyncData`` it is also meant to be overwritten for each specific implementation.\
 This ``SyncNode`` is also where frames are stored and handled they are meant to surface data that allows the nodes to be changed\
-``SyncNode`` automagicly check in with the ``FrameSyncController`` and the server asssigns them a unique id for later referencing.
+``SyncNode`` automagically checks in with the ``FrameSyncController`` and the server assigns them a unique id for later referencing.
 
 ## CreationController
 This is used to instantiate ``SyncNode`` a call can be made to the ``CreationController`` to ask it to spawn a scene that will get automatically send to all clients.\
-If someone late joins the ``CreationController`` remembers and will populate the new client with all the ``SyncNode``
+If someone late joins, the ``CreationController`` remembers and will populate the new client with all the ``SyncNode``
 
 ----
 
@@ -41,8 +41,8 @@ Below are the only two classes you would need to build (excluding normal game st
 
 
 ### ChatSyncData.gd
-This just acts as a data layer to be able to nagivate through the ``FrameSyncController``\
-The first 3 values are required but after that you can add any data you want that can be encoded into json
+This just acts as a data layer to be able to navigate through the ``FrameSyncController``\
+The first 3 values are required, but after that, you can add any data you want that can be encoded into JSON
 ``` gdscript
 extends SyncData
 
@@ -67,7 +67,6 @@ static func deserialize(value:String):
 ```
 
 ### ChatSynNode.gd
-This code opens up comes functions
 ``` gdscript
 extends SyncNode
 
@@ -104,8 +103,8 @@ func convert_to_object(value):
 
 ## Planned Features for the future
 * Rollback support of some kind
-* Steam VPN lobby integration as an option using Godot Steam addon
+* Steam VPN lobby integration as an option using Godot Steam add-on
 * Some ready to go out of the box nodes that makes sense are documented and just work to lower the bar to entry
 
 
-  ## Please provide feedback and any recomendations to improve the library
+  ## Please provide feedback and any recommendations to improve the library
