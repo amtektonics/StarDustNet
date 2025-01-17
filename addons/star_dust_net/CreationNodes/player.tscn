@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://dtyyujsvsi4w0"]
+
+[ext_resource type="Script" path="res://addons/star_dust_net/CreationNodes/player.gd" id="1_kdut2"]
+[ext_resource type="Texture2D" uid="uid://dfa2auo6ngkqo" path="res://icon.svg" id="2_8i4jh"]
+[ext_resource type="Script" path="res://addons/star_dust_net/Sync/Pos2DSyncNode.gd" id="3_s2kf0"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_pv6wj"]
+radius = 64.0
+
+[node name="Player" type="CharacterBody2D"]
+motion_mode = 1
+script = ExtResource("1_kdut2")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_8i4jh")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_pv6wj")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+enabled = false
+zoom = Vector2(0.5, 0.5)
+drag_horizontal_enabled = true
+drag_vertical_enabled = true
+
+[node name="POS2DSyncNode" type="Node" parent="."]
+script = ExtResource("3_s2kf0")
+
+[connection signal="position_updated" from="POS2DSyncNode" to="." method="_on_pos_2d_sync_node_position_updated"]

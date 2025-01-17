@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://00lutqakjkf4"]
+
+[ext_resource type="Script" path="res://addons/star_dust_net/Sync/Input2DClientSyncNode.gd" id="1_7iotx"]
+
+[node name="Input2dClientNode" type="Node"]
+script = ExtResource("1_7iotx")
