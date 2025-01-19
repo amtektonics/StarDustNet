@@ -57,8 +57,13 @@ func start_enet_client(ip_address:String, port:int):
 #close for both server and client
 func close_network_peer():
 	#clear this data first we won't need it anymore
+	#clean up the global nodes first
+	FrameSyncController.clear_all_sync_nodes()
+	CreationController.clear_creation()
+	#and then the local stuff
 	_ping_history.clear()
 	_connected_players.clear()
+	
 	emit_signal("peer_closed")
 	if(self.is_net_connected()):
 		if(multiplayer.is_server()):

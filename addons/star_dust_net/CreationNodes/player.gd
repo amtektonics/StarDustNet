@@ -12,7 +12,16 @@ func handle_args(args:String):
 	if(data.has("oid")):
 		_owner_id = data["oid"]
 
+func get_updated_args()->String:
+	var data = {
+		"posx":get_position().x,
+		"posy":get_position().y,
+		"oid":_owner_id
+		}
+	return JSON.stringify(data)
+
 func _ready():
+	NetController.player_disconnected.connect(_player_disconnected)
 	if(_owner_id == multiplayer.get_unique_id()):
 		$Camera2D.enabled = true
 
@@ -49,3 +58,8 @@ func set_res_id(res_id:int):
 
 func _on_pos_2d_sync_node_position_updated(pos:Vector2):
 	set_position(pos)
+
+func _player_disconnected(id):
+	if(_owner_id == id):
+		FrameSyncController.remove_sync_node($POS2DSyncNode.sync_id)
+		CreationController.remove_net_node(_res_id)

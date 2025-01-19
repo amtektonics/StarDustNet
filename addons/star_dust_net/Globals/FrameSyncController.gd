@@ -41,6 +41,11 @@ func get_sync_node(node_id:int):
 			return s
 	return null
 
+func clear_all_sync_nodes():
+	_sync_count = 1
+	_sync_nodes.clear()
+	_stored_frames.clear()
+
 func _player_connected(id):
 	#nodes need to exist before they are syncronized
 	CreationController.sync_creation_new_player(id)
@@ -49,7 +54,6 @@ func _player_connected(id):
 	if(multiplayer.is_server()):
 		_start_peer_setup_delay(id)
 	
-
 func _start_peer_setup_delay(peer_id:int):
 	var timer = NamedTimer.new()
 	timer.name = str(peer_id)

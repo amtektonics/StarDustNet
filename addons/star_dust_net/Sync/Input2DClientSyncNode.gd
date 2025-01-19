@@ -9,6 +9,9 @@ func handle_args(args:String):
 	if(data.has("name")):
 		set_name(data["name"])
 
+func get_updated_args():
+	return JSON.stringify({"name":get_name()})
+
 func send_move_update(move_update:Vector2):
 	if(!multiplayer.is_server()):
 		var uid = multiplayer.get_unique_id()

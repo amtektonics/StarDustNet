@@ -1,7 +1,11 @@
 extends Node
 
+#resource id that should be used next
 var _next_rid = 1
+#list of node objects that got created
 var _created_nodes = {}
+#list of sync variable that can be resent to create the nodes
+#on new clients
 var _syncronization_data = {}
 
 func create_net_node(res_path:String, scene_path:String, args:String):
@@ -10,9 +14,20 @@ func create_net_node(res_path:String, scene_path:String, args:String):
 		_next_rid += 1
 		rpc("_node_creation_local", res_path, scene_path, id, args)
 
+#this should be used on the server to send a removal request to all clients
 func remove_net_node(res_id:int):
 	if(multiplayer.is_server()):
 		rpc("_node_removal_local", res_id)
+
+func clear_creation():
+	#free the nodes
+	for n in _created_nodes:
+		_created_nodes[n].queue_free()
+	
+	#clear the arrays and reset the ids
+	_next_rid = 1
+	_created_nodes.clear()
+	_syncronization_data.clear()
 
 @rpc("authority", "call_local", "reliable")
 func _node_removal_local(res_id:int):
@@ -21,6 +36,8 @@ func _node_removal_local(res_id:int):
 		node.queue_free()
 		_created_nodes.erase(res_id)
 
+#this rpc should be used to create nodes on both the server and client for
+#when they are added to the world
 @rpc("authority", "call_local", "reliable")
 func _node_creation_local(res_path:String, scene_path:String, res_id:int, args:String):
 	if(multiplayer.get_remote_sender_id() == 1):
@@ -39,6 +56,8 @@ func _node_creation_local(res_path:String, scene_path:String, res_id:int, args:S
 			_created_nodes[res_id] = node
 			_syncronization_data[res_id] = {"rp":res_path, "sp":scene_path, "rid":res_id, "a":args}
 
+#this rpc gets called when a new player joins the server to be able to bring
+#them up to speed with all the nodes that exist in the world
 @rpc("authority", "call_remote", "reliable")
 func _node_creation_remote(res_path:String, scene_path:String, res_id:int, args:String):
 	if(multiplayer.get_remote_sender_id() == 1):
@@ -53,8 +72,11 @@ func _node_creation_remote(res_path:String, scene_path:String, res_id:int, args:
 		_created_nodes[res_id] = node
 		_syncronization_data[res_id] = {"rp":res_path, "sp":scene_path, "rid":res_id, "a":args}
 
+#this function gets called when a new player joins to add all the network nodes
 func sync_creation_new_player(id):
 	if(multiplayer.is_server()):
 		for i in _syncronization_data:
 			var data = _syncronization_data[i]
-			rpc_id(id, "_node_creation_remote", data["rp"], data["sp"], data["rid"], data["a"])
+			var node = _created_nodes[i]
+			var a = node.get_updated_args()
+			rpc_id(id, "_node_creation_remote", data["rp"], data["sp"], data["rid"], a)
