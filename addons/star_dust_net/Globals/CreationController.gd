@@ -13,11 +13,18 @@ func create_net_node(res_path:String, scene_path:String, args:String):
 		var id = _next_rid
 		_next_rid += 1
 		rpc("_node_creation_local", res_path, scene_path, id, args)
+		return id
 
 #this should be used on the server to send a removal request to all clients
 func remove_net_node(res_id:int):
 	if(multiplayer.is_server()):
 		rpc("_node_removal_local", res_id)
+
+func get_created_node(res_id:int):
+	if(_created_nodes.has(res_id)):
+		return _created_nodes[res_id]
+	else:
+		return null
 
 func clear_creation():
 	#free the nodes
@@ -35,6 +42,7 @@ func _node_removal_local(res_id:int):
 		var node = _created_nodes[res_id]
 		node.queue_free()
 		_created_nodes.erase(res_id)
+		_syncronization_data.erase(res_id)
 
 #this rpc should be used to create nodes on both the server and client for
 #when they are added to the world

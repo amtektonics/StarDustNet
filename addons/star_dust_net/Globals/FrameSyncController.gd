@@ -50,6 +50,8 @@ func _player_connected(id):
 	#nodes need to exist before they are syncronized
 	CreationController.sync_creation_new_player(id)
 	for s in _sync_nodes:
+		if(s == null):
+			continue
 		rpc_id(id,"_register_sync_node", s.get_path(), s.sync_id)
 	if(multiplayer.is_server()):
 		_start_peer_setup_delay(id)
