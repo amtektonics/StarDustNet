@@ -78,10 +78,12 @@ func get_ping_average(peer_id:int):
 	if(_ping_history.has(peer_id)):
 		var count = 0
 		var ping_sum = 0
-		for p:PingModel in _ping_history[peer_id]:
+		for p in _ping_history[peer_id]:
 			ping_sum = p.ping_difference
 			count += 1
 		
+		if(count == 0):
+			return -1
 		return ping_sum / count
 	else:
 		return -1
@@ -113,14 +115,14 @@ func _physics_process(delta):
 		#this is currently set to the physics tick * an interval value
 		#this will ping the clients every second with an interval value of 0
 		if(multiplayer.is_server()):
-			if(_ticks % (Engine.get_physics_ticks_per_second() * 3) == 0):
+			if(_ticks % int((Engine.get_physics_ticks_per_second() * .125)) == 0):
 				#send out new pings every to get the current lag
 				for p in _connected_players:
 					if(p.peer_id == 1):
 						continue
 					_ping(p.peer_id)
 				#sync the servers history with all the clients
-				rpc("_sync_ping_history", _ping_history)
+				rpc("_sync_ping_history", _serialize_ping_history())
 
 #private internal functions
 func _register_server_signals():
@@ -148,6 +150,14 @@ func _serialize_players():
 	
 	return players
 
+func _serialize_ping_history():
+	var ping = {}
+	for p in _ping_history:
+		ping[p] = []
+		for pp:PingModel in _ping_history[p]:
+			ping[p].append(pp.serialize())
+	return ping
+
 func _ping(peer_id:int):
 	rpc_id(peer_id, "_pong", Time.get_ticks_msec())
 
@@ -158,8 +168,8 @@ func _pong(time:int):
 		if(!_ping_history.has(sender)):
 			_ping_history[sender] = []
 		
-		_ping_history[sender].append(PingModel.new(sender, Time.get_ticks_msec() - time))
-		if(_ping_history[sender].size() > 10):
+		_ping_history[sender].append(PingModel.new(sender, (Time.get_ticks_msec() - time) / 2))
+		if(_ping_history[sender].size() > 4):
 			_ping_history[sender].pop_front()
 	else:
 		#send it back!
@@ -219,9 +229,14 @@ func _sync_ticks(tickrate, ticks):
 		_ticks = ticks
 
 @rpc("authority", "call_remote", "reliable")
-func _sync_ping_history(ping_history):
+func _sync_ping_history(ping_history:Dictionary):
 	if(!multiplayer.is_server()):
-		_ping_history = ping_history
+		var _new_ping_history = {}
+		for p in ping_history:
+			_new_ping_history[p] = Array()
+			for pp in ping_history[p]:
+				_new_ping_history[p].append(PingModel.deserialize(pp))
+		_ping_history = _new_ping_history
 
 func _remove_peer(peer_id:int):
 	#removes the player from the player list if the leave the server
