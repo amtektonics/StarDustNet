@@ -28,6 +28,10 @@ func add_frame_data(data:String):
 	_sync_stack.append(frame)
 	_frame_added()
 
+#override this node if it's also a creation node
+#but don't forget to remove the sync part first
+func remove_from_net():
+	FrameSyncController.remove_sync_node(sync_id)
 
 #data transmision functions
 #store referses to if we want the frame to be stored so it can be sent
@@ -100,6 +104,9 @@ func get_all_frames():
 #the sync node is the only thing getting intalized
 func set_res_id(res_id:int):
 	_res_id = res_id
+
+func get_res_id():
+	return _res_id
 
 #overides
 #this override is ment for converting a json string value into a Sync Object
