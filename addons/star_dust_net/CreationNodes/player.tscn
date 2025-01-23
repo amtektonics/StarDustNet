@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://addons/star_dust_net/CreationNodes/player.gd" id="1_kdut2"]
 [ext_resource type="Texture2D" uid="uid://dfa2auo6ngkqo" path="res://icon.svg" id="2_8i4jh"]
-[ext_resource type="Script" path="res://addons/star_dust_net/Sync/Pos2DSyncNode.gd" id="3_s2kf0"]
+[ext_resource type="Script" path="res://addons/star_dust_net/Demo/DemoPos2DSyncNode.gd" id="3_s2kf0"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_pv6wj"]
 radius = 64.0

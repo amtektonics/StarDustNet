@@ -17,9 +17,13 @@ var _is_connected = false
 
 var _client_setup_grace_period = 2.0
 
+var _steam_lobby_id = 0
+
 signal player_connected
 
 signal player_disconnected
+
+signal players_updated
 
 signal connected_to_server
 
@@ -31,6 +35,86 @@ signal server_started
 
 signal peer_closed
 
+func _ready():
+	pass
+	#I will implement this later
+	#if(Engine.has_singleton("Steam")):
+		#Steam.lobby_match_list.connect(_steam_lobby_match_list)
+
+
+func _process(delta):
+	if(Engine.get_singleton("Steam")):
+		Steam.run_callbacks()
+
+func start_steam_lobby(lobby_type, count):
+	if(Engine.has_singleton("Steam")):
+		var peer = SteamMultiplayerPeer.new()
+		peer.lobby_created.connect(_steam_lobby_created)
+		peer.lobby_kicked.connect(_steam_lobby_kicked)
+		peer.lobby_joined.connect(_steam_lobby_joined)
+		var status = peer.create_lobby(lobby_type, count)
+		if(status == OK):
+			multiplayer.multiplayer_peer = peer
+		return status
+
+func connect_steam_lobby(lobby_id):
+	if(Engine.has_singleton("Steam")):
+		var peer = SteamMultiplayerPeer.new()
+		peer.lobby_joined.connect(_steam_lobby_joined)
+		peer.lobby_kicked.connect(_steam_lobby_kicked)
+		var status = peer.join_lobby(lobby_id)
+		if(status == OK):
+			multiplayer.multiplayer_peer = peer
+		return status
+
+func get_steam_friends_lobbies():
+	if(Engine.has_singleton("Steam") && is_net_connected() && _steam_lobby_id != 0):
+		var count = Steam.getFriendCount(Steam.FRIEND_FLAG_IMMEDIATE)
+		var results = {}
+		for i in range(count):
+			var steam_id = Steam.getFriendByIndex(i,Steam.FRIEND_FLAG_IMMEDIATE)
+			var game_info = Steam.getFriendGamePlayed(steam_id)
+			if(game_info.is_empty()):
+				continue
+			else:
+				var app_id = game_info["id"]
+				var lobby = game_info["id"]
+				if(app_id != Steam.getAppID() or lobby is String):
+					continue
+				results[steam_id] = lobby
+		return results
+	return null
+
+func show_invite_overlay():
+	if(Engine.has_singleton("Steam") && is_net_connected() && _steam_lobby_id != 0):
+		Steam.activateGameOverlayInviteDialog(_steam_lobby_id)
+
+#--------------------------------------------
+#steam signals
+func _steam_lobby_created(connect:int, lobby_id:int):
+	if(connect == 1):
+		_steam_lobby_id = lobby_id
+		multiplayer.multiplayer_peer.set_lobby_joinable(true)
+		_is_connected = true
+		_connected_players.append(NetPlayerModel.new(1, {}))
+		emit_signal("server_started")
+	
+func _steam_lobby_joined(lobby: int, permissions: int, locked: bool, response: int):
+	_steam_lobby_id = lobby
+	print(permissions)
+	print(locked)
+	print(response)
+	emit_signal("connected_to_server")
+
+
+func _steam_lobby_kicked(lobby_id: int, admin_id: int, due_to_disconnect: int):
+	pass
+
+
+func _steam_lobby_invite(inviter: int, lobby: int, game: int):
+	print(inviter, lobby, game)
+	
+#--------------------------------------------
 #straight forward peer server spinup
 #the name system will be replaced with Steam names in the future
 func start_enet_server(port:int):
@@ -38,9 +122,9 @@ func start_enet_server(port:int):
 	var status = _multiplayer_peer.create_server(port)
 	if(status == OK):
 		multiplayer.multiplayer_peer = _multiplayer_peer
-		_register_server_signals()
+		_register_enet_server_signals()
 		_is_connected = true
-		_connected_players.append(NetPlayerModel.new("", 1))
+		_connected_players.append(NetPlayerModel.new(1, {}))
 		emit_signal("server_started")
 	return status
 
@@ -50,12 +134,16 @@ func start_enet_client(ip_address:String, port:int):
 	var status = _multiplayer_peer.create_client(ip_address, port)
 	if(status == OK):
 		multiplayer.multiplayer_peer = _multiplayer_peer
-		_register_client_signals()
+		_register_enet_client_signals()
 		_is_connected = true
 	return status
 
+func send_player_data(data:Dictionary):
+	for i in data:
+		rpc_id(1, "_set_player_data", i, data[i])
+
 #close for both server and client
-func close_network_peer():
+func close_network_enet_peer():
 	#clear this data first we won't need it anymore
 	#clean up the global nodes first
 	FrameSyncController.clear_all_sync_nodes()
@@ -67,9 +155,9 @@ func close_network_peer():
 	emit_signal("peer_closed")
 	if(self.is_net_connected()):
 		if(multiplayer.is_server()):
-			_disconnect_server_signals()
+			_disconnect_enet_server_signals()
 		else:
-			_disconnect_client_signals()
+			_disconnect_enet_client_signals()
 		_is_connected = false
 		multiplayer.multiplayer_peer.close()
 
@@ -125,20 +213,20 @@ func _physics_process(delta):
 				rpc("_sync_ping_history", _serialize_ping_history())
 
 #private internal functions
-func _register_server_signals():
+func _register_enet_server_signals():
 	multiplayer.peer_connected.connect(_peer_connected)
 	multiplayer.peer_disconnected.connect(_peer_disconnected)
 
-func _disconnect_server_signals():
+func _disconnect_enet_server_signals():
 	multiplayer.peer_connected.disconnect(_peer_connected)
 	multiplayer.peer_disconnected.disconnect(_peer_disconnected)
 
-func _register_client_signals():
+func _register_enet_client_signals():
 	multiplayer.connected_to_server.connect(_connected_to_server)
 	multiplayer.connection_failed.connect(_connection_failed)
 	multiplayer.server_disconnected.connect(_server_disconnected)
 
-func _disconnect_client_signals():
+func _disconnect_enet_client_signals():
 	multiplayer.connected_to_server.disconnect(_connected_to_server)
 	multiplayer.connection_failed.disconnect(_connection_failed)
 	multiplayer.server_disconnected.disconnect(_server_disconnected)
@@ -206,6 +294,7 @@ func _sync_players(player_data_array:Array):
 				break
 		if(!_has_player):
 			emit_signal("player_disconnected", p.peer_id)
+	emit_signal("players_updated")
 	
 	#Loop through to find any connections
 	for p:NetPlayerModel in player_data:
@@ -238,6 +327,14 @@ func _sync_ping_history(ping_history:Dictionary):
 				_new_ping_history[p].append(PingModel.deserialize(pp))
 		_ping_history = _new_ping_history
 
+@rpc("any_peer", "call_remote", "reliable")
+func _set_player_data(key, value):
+	if(multiplayer.is_server()):
+		var id = multiplayer.get_unique_id()
+		if(_connected_players.has(id)):
+			_connected_players[id].set_data(key, value)
+			rpc("_sync_players", _serialize_players())
+
 func _remove_peer(peer_id:int):
 	#removes the player from the player list if the leave the server
 	for p:NetPlayerModel in _connected_players:
@@ -246,7 +343,7 @@ func _remove_peer(peer_id:int):
 			break
 
 func _peer_connected(id):
-	_connected_players.append(NetPlayerModel.new("", id))
+	_connected_players.append(NetPlayerModel.new(id, {}))
 	#tell all the clients what the new player list is
 	rpc("_sync_players", _serialize_players())
 	#sync the new player with the server time and tickrate
@@ -263,8 +360,6 @@ func _peer_disconnected(id):
 	emit_signal("player_disconnected", id)
 
 func _connected_to_server():
-	rpc_id(1, "_register_player_name", "Bob")
-	#_sync_players(_serialize_players())
 	emit_signal("connected_to_server")
 
 func _connection_failed():
