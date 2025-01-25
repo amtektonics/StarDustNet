@@ -30,16 +30,26 @@ func remove_sync_node(node_id:int):
 			break
 
 func has_sync_node_id(node_id:int):
+	_clean_client_sync_nodes()
 	for s:SyncNode in _sync_nodes:
 		if(s.sync_id == node_id):
 			return true
 	return false
 
 func get_sync_node(node_id:int):
+	_clean_client_sync_nodes()
 	for s:SyncNode in _sync_nodes:
 		if(s.sync_id == node_id):
 			return s
 	return null
+
+func _clean_client_sync_nodes():
+	var is_null = []
+	var index = 0
+	for s in _sync_nodes:
+		if(s == null):
+			is_null.append(index)
+		index += 1
 
 func clear_all_sync_nodes():
 	_sync_count = 1
