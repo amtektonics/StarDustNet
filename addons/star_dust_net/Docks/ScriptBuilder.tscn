@@ -1,0 +1,49 @@
+[gd_scene load_steps=3 format=3 uid="uid://bbdgnn623rjc3"]
+
+[ext_resource type="Script" path="res://addons/star_dust_net/Docks/ScriptBuilderDock.gd" id="1_o8nue"]
+[ext_resource type="PackedScene" uid="uid://dpoxjx5s6f2hl" path="res://addons/star_dust_net/Docks/PopupSyncControl.tscn" id="2_1ggre"]
+
+[node name="ScriptBuilder" type="Control"]
+layout_mode = 3
+anchor_right = 0.293
+anchor_bottom = 1.0
+offset_right = 1.46399
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_o8nue")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.294
+anchor_bottom = 0.205
+offset_right = -298.688
+offset_bottom = -92.84
+theme_override_constants/separation = 20
+
+[node name="AddNewSyncData" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Add New Sync and Data"
+
+[node name="AddNewRes" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Add New Creation Resource"
+
+[node name="AddNewSyncResData" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Add New Sync Data And Creation Resource"
+
+[node name="Window" type="Window" parent="."]
+transparent_bg = true
+initial_position = 1
+size = Vector2i(400, 200)
+visible = false
+always_on_top = true
+popup_window = true
+
+[node name="PopupSyncControl" parent="Window" instance=ExtResource("2_1ggre")]
+
+[connection signal="pressed" from="VBoxContainer/AddNewSyncData" to="." method="_on_add_new_sync_data_pressed"]
+[connection signal="pressed" from="VBoxContainer/AddNewRes" to="." method="_on_add_new_res_pressed"]
+[connection signal="pressed" from="VBoxContainer/AddNewSyncResData" to="." method="_on_add_new_sync_res_data_pressed"]
+[connection signal="close_requested" from="Window" to="Window/PopupSyncControl" method="_on_window_close_requested"]

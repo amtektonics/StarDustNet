@@ -1,0 +1,66 @@
+[gd_scene load_steps=2 format=3 uid="uid://dpoxjx5s6f2hl"]
+
+[ext_resource type="Script" path="res://addons/star_dust_net/Docks/PopupSyncControl.gd" id="1_0sox8"]
+
+[node name="PopupSyncControl" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0sox8")
+
+[node name="FileName" type="Label" parent="."]
+layout_mode = 2
+offset_left = 43.5
+offset_top = 42.5
+offset_right = 121.5
+offset_bottom = 65.5
+text = "File Name"
+
+[node name="FileNameInput" type="LineEdit" parent="."]
+layout_mode = 2
+offset_left = 161.0
+offset_top = 43.0
+offset_right = 370.0
+offset_bottom = 74.0
+tooltip_text = "SyncNode SyncData And Resource will get appended to each respective node"
+placeholder_text = "File Name"
+alignment = 1
+
+[node name="Path" type="Label" parent="."]
+layout_mode = 2
+offset_left = 43.5
+offset_top = 88.5
+offset_right = 130.5
+offset_bottom = 111.5
+text = "Path Name"
+
+[node name="PathInput" type="LineEdit" parent="."]
+layout_mode = 2
+offset_left = 161.0
+offset_top = 89.0
+offset_right = 371.0
+offset_bottom = 120.0
+text = "res://NetNodes/"
+alignment = 1
+
+[node name="Cancel" type="Button" parent="."]
+layout_mode = 2
+offset_left = 43.5
+offset_top = 130.5
+offset_right = 121.5
+offset_bottom = 161.5
+text = "Cancel"
+
+[node name="Confirm" type="Button" parent="."]
+layout_mode = 2
+offset_left = 300.0
+offset_top = 131.0
+offset_right = 371.0
+offset_bottom = 162.0
+text = "Confirm"
+
+[connection signal="pressed" from="Cancel" to="." method="_on_cancel_pressed"]
+[connection signal="pressed" from="Confirm" to="." method="_on_confirm_pressed"]

@@ -1,0 +1,32 @@
+extends SyncNode
+class_name @@SyncNode
+
+var _res_id = 0
+
+func handle_args(args:String):
+	var data = JSON.parse_string(args)
+	#do something with the data here
+
+
+func get_updated_args()->String:
+	#create some data and convert it to a
+	#JSON string
+	return ""
+
+#this function is called when a new 
+#function is sent over to this sync node
+func _frame_added():
+	pass
+
+
+#this function is built in to
+#deserialize the frames to the correct data type
+func convert_to_object(value):
+	return @@SyncData.deserialize(value)
+
+
+func remove_from_net():
+	super()
+	#this is all that needs to be added for a basic creation
+	#node but if you have any sync nodes as children you should
+	#remove them in this function 

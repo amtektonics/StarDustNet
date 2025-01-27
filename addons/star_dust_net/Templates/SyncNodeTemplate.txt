@@ -1,0 +1,14 @@
+extends SyncNode
+class_name @@SyncNode
+
+
+#this function is called when a new 
+#function is sent over to this sync node
+func _frame_added():
+	pass
+
+
+#this function is built in to
+#deserialize the frames to the correct data type
+func convert_to_object(value):
+	return @@SyncData.deserialize(value)
