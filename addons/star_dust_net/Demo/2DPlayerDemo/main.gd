@@ -26,3 +26,9 @@ func _server_started():
 	var y = randi_range(1, 100)
 	var p_args = JSON.stringify({"posx":x, "posy":y, "oid":1})
 	CreationController.create_net_node("res://addons/star_dust_net/CreationNodes/player.tscn", str(get_path()) + "/Players", p_args)
+
+
+func _on_hole_me_pressed():
+	NetController.punch_hole("45.33.127.132", 4001)
+	#await get_tree().create_timer(0.5).timeout
+	print(NetController.start_enet_server(4001))

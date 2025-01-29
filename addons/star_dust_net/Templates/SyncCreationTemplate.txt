@@ -1,8 +1,6 @@
 extends SyncNode
 class_name @@SyncNode
 
-var _res_id = 0
-
 func handle_args(args:String):
 	var data = JSON.parse_string(args)
 	#do something with the data here
@@ -27,6 +25,7 @@ func convert_to_object(value):
 
 func remove_from_net():
 	super()
+	CreationController.remove_net_node(_res_id)
 	#this is all that needs to be added for a basic creation
 	#node but if you have any sync nodes as children you should
 	#remove them in this function 

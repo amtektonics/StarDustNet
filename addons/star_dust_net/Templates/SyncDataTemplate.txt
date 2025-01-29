@@ -12,6 +12,7 @@ static func deserialize(value:String):
 	var data = JSON.parse_string(value)
 	return @@SyncData.new(data["sid"], data["fid"], data["uid"])
 
+
 static func from_sync_node(node:SyncNode, uid:int):
 	var frame = @@SyncData.new(node.sync_id, NetController.get_current_tick(), uid)
 	return frame

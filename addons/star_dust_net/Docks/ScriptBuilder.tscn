@@ -14,11 +14,13 @@ script = ExtResource("1_o8nue")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
-anchors_preset = -1
-anchor_right = 0.294
-anchor_bottom = 0.205
-offset_right = -298.688
-offset_bottom = -92.84
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -169.5
+offset_right = 69.5
+offset_bottom = 133.0
+grow_horizontal = 2
 theme_override_constants/separation = 20
 
 [node name="AddNewSyncData" type="Button" parent="VBoxContainer"]
@@ -31,7 +33,7 @@ text = "Add New Creation Resource"
 
 [node name="AddNewSyncResData" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-text = "Add New Sync Data And Creation Resource"
+text = "New Sync Data And Creation"
 
 [node name="Window" type="Window" parent="."]
 transparent_bg = true

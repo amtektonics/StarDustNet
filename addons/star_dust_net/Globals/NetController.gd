@@ -46,6 +46,17 @@ func _process(delta):
 	if(Engine.get_singleton("Steam")):
 		Steam.run_callbacks()
 
+func punch_hole(server_addr:String, port:int):
+	var socket = PacketPeerUDP.new()
+	var status = socket.connect_to_host(server_addr, port)
+	if(status == OK):
+		socket.put_packet("HoleMe".to_ascii_buffer())
+		while true:
+			var extern_port = socket.get_packet().get_string_from_ascii()
+			if(extern_port != ""):
+				print("message: " + extern_port)
+				break
+
 func start_steam_lobby(lobby_type, count):
 	if(Engine.has_singleton("Steam")):
 		var peer = SteamMultiplayerPeer.new()

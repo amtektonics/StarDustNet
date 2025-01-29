@@ -47,9 +47,15 @@ text = "Host"
 layout_mode = 2
 text = "Join"
 
+[node name="HoleMe" type="Button" parent="ConnectScreen/VBox"]
+visible = false
+layout_mode = 2
+text = "Punch Hole"
+
 [node name="Inputs" type="Node" parent="."]
 
 [node name="Players" type="Node" parent="."]
 
 [connection signal="pressed" from="ConnectScreen/VBox/Host" to="ConnectScreen" method="_on_host_pressed"]
 [connection signal="pressed" from="ConnectScreen/VBox/Join" to="ConnectScreen" method="_on_join_pressed"]
+[connection signal="pressed" from="ConnectScreen/VBox/HoleMe" to="." method="_on_hole_me_pressed"]
