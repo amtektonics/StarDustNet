@@ -35,71 +35,11 @@ If someone late joins, the ``CreationController`` remembers and will populate th
 
 ----
 
-## Chat Example
-
-Below are the only two classes you would need to build (excluding normal game stuff) to be able to make a basic chat system
-
-
-### ChatSyncData.gd
-This just acts as a data layer to be able to navigate through the ``FrameSyncController``\
-The first 3 values are required, but after that, you can add any data you want that can be encoded into JSON
-``` gdscript
-extends SyncData
-
-class_name ChatSyncData
-
-var message:String=""
-
-func _init(sync_id:int, frame_id:int, sender_id:int, message:String):
-	super(sync_id, frame_id, sender_id)
-	self.message = message
-	self.sender_id = sender_id
+## Plugin Tools
+When the plugin is enabled it will created a new menu on the left side bar. The bar gives you the ability to generate gdscripts you will need with pre generated field.
 
 
-#the letters or numbers for these packets don't matter they just need to match between the two functions
-func serialize():
-	return JSON.stringify({"sid":self.sync_id, "fid":self.frame_id, "m":message, "sen":sender_id})
-
-static func deserialize(value:String):
-	var data = JSON.parse_string(value)
-	return ChatSyncData.new(data["sid"], data["fid"], data["m"], data["sen"])
-
-```
-
-### ChatSynNode.gd
-``` gdscript
-extends SyncNode
-
-class_name ChatSyncNode
-
-
-signal new_message
-
-func send_message(message):
-	if(NetController.is_net_connected()):
-		var net_id = multiplayer.get_unique_id()
-		var frame = ChatSyncData.new(self.sync_id, NetController.get_current_tick(), message, net_id)
-		send_reliable_frame_all_local( frame, true)
-
-func send_server_message(message):
-	if(NetController.is_net_connected()):
-		if(multiplayer.is_server()):
-			var net_id = multiplayer.get_unique_id()
-			var frame = ChatSyncData.new(self.sync_id, NetController.get_current_tick(), message, net_id)
-			send_reliable_frame_all_local(frame, true)
-
-#The two functions below are overrides from SyncNode
-#_frame_added is built in and fires off when the node gets a new frame
-func _frame_added():
-	var frame = get_newest_frame()
-	emit_signal("new_message", frame)
-	pop_oldest_frame()
-
-#This is so it deserializes into the correct Data Type
-func convert_to_object(value):
-	return ChatSyncData.deserialize(value)
-
-```
+----
 
 ## Planned Features for the future
 * Rollback example Demo
