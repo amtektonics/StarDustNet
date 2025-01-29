@@ -1,6 +1,6 @@
 # Star Dust Net
 ### Version Support -- Godot 4.2 
-### Very Alpha, a lot of it can change with updates
+### Alpha, a lot of it can change with updates
 This addons goal is to simplify the creation of multiplayer peer to peer server authoritative games.\
 It would be considered an unnecessary complication for basic peer-to-peer games, but if you want better control of data packets on the back and front end, hopefully this will help.
 
@@ -102,8 +102,9 @@ func convert_to_object(value):
 ```
 
 ## Planned Features for the future
-* Rollback support of some kind
+* Rollback example Demo
 * Steam VPN lobby integration as an option using Godot Steam add-on
+* Stun and Turn support for mobile applications  (maybe web at some point but not anytime soon)
 * Some ready to go out of the box nodes that makes sense are documented and just work to lower the bar to entry
 
 
