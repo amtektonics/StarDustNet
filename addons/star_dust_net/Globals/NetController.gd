@@ -46,16 +46,33 @@ func _process(delta):
 	if(Engine.get_singleton("Steam")):
 		Steam.run_callbacks()
 
-func punch_hole(server_addr:String, port:int):
-	var socket = PacketPeerUDP.new()
-	var status = socket.connect_to_host(server_addr, port)
+#func punch_hole(server_addr:String, port:int):
+	#var socket = PacketPeerUDP.new()
+	#var status = socket.connect_to_host(server_addr, port)
+	#if(status == OK):
+		#socket.put_packet("HoleMe".to_ascii_buffer())
+		#while true:
+			#var extern_port = socket.get_packet().get_string_from_ascii()
+			#if(extern_port != ""):
+				#print("message: " + extern_port)
+				#break
+
+##format for this will be "ws://127.0.0.1:<Port>" wss:// for secure web socket
+##tlks is the options for security when using thsi
+func start_web_client(url:String, tls=null):
+	var peer = WebSocketMultiplayerPeer.new()
+	var status = peer.create_client(url, tls)
 	if(status == OK):
-		socket.put_packet("HoleMe".to_ascii_buffer())
-		while true:
-			var extern_port = socket.get_packet().get_string_from_ascii()
-			if(extern_port != ""):
-				print("message: " + extern_port)
-				break
+		multiplayer.multiplayer_peer = peer
+		_register_enet_client_signals()
+
+
+func start_web_server(port:int, tls=null):
+	var peer = WebSocketMultiplayerPeer.new()
+	var status = peer.create_server(port, "*", tls)
+	if(status == OK):
+		multiplayer.multiplayer_peer = peer
+		_register_enet_server_signals()
 
 func start_steam_lobby(lobby_type, count):
 	if(Engine.has_singleton("Steam")):
