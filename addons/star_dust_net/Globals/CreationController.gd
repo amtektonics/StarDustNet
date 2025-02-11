@@ -15,6 +15,8 @@ func create_net_node(res_path:String, scene_path:String, args:String):
 		rpc("_node_creation_local", res_path, scene_path, id, args)
 		return id
 
+
+
 #this should be used on the server to send a removal request to all clients
 func remove_net_node(res_id:int):
 	if(multiplayer.is_server()):

@@ -46,16 +46,31 @@ func _process(delta):
 	if(Engine.get_singleton("Steam")):
 		Steam.run_callbacks()
 
-#func punch_hole(server_addr:String, port:int):
-	#var socket = PacketPeerUDP.new()
-	#var status = socket.connect_to_host(server_addr, port)
-	#if(status == OK):
-		#socket.put_packet("HoleMe".to_ascii_buffer())
-		#while true:
-			#var extern_port = socket.get_packet().get_string_from_ascii()
-			#if(extern_port != ""):
-				#print("message: " + extern_port)
-				#break
+func create_stun_server_room(server_addr:String, port:int):
+	var socket = PacketPeerUDP.new()
+	var status = socket.connect_to_host(server_addr, port)
+	if(status == OK):
+		socket.put_packet("create_room:0".to_ascii_buffer())
+		while true:
+			var game_code = socket.get_packet().get_string_from_ascii()
+			if(game_code != ""):
+				socket.put_packet("keep_alive".to_ascii_buffer())
+				return game_code
+				break
+				
+
+func get_room_info(server_addr:String, port:int, room_code:String):
+	var socket = PacketPeerUDP.new()
+	var status = socket.connect_to_host(server_addr, port)
+	if(status == OK):
+		socket.put_packet(("get_room:" + room_code).to_ascii_buffer())
+		while true:
+			var response = socket.get_packet().get_string_from_ascii()
+			if(response != ""):
+				return response
+				break
+				
+
 
 ##format for this will be "ws://127.0.0.1:<Port>" wss:// for secure web socket
 ##tlks is the options for security when using thsi

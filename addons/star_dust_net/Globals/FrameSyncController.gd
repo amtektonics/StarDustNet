@@ -103,19 +103,23 @@ func send_input_frame(input_data:Dictionary):
 func get_newest_input_frame(peer_id:int):
 	var newest = -1
 	var target_frame
-	for f in _inputs[peer_id]:
-		if(!f.has("tick")):
-			continue
-		if(f["tick"] > newest):
-			newest = f["tick"]
-			target_frame = f
-	return target_frame
+	if(_inputs.has(peer_id)):
+		for f in _inputs[peer_id]:
+			if(!f.has("tick")):
+				continue
+			if(f["tick"] > newest):
+				newest = f["tick"]
+				target_frame = f
+		return target_frame
+	else:
+		return null
 
 #get a specific input from the newest frame
 func get_last_input(peer_id:int, input_tag):
 	var f = get_newest_input_frame(peer_id)
-	if(f.has(input_tag)):
-		return f[input_tag]
+	if(f != null):
+		if(f.has(input_tag)):
+			return f[input_tag]
 
 #Used for house keeping to delete frames that are not needed
 func _pop_oldest_input(peer_id:int):
@@ -130,7 +134,7 @@ func _pop_oldest_input(peer_id:int):
 #rpc methods
 #the main and only RPC used to process internal input controls
 @rpc("any_peer", "call_remote", "unreliable")
-func _add_input_frames(string_data:String):
+func _add_input_frame(string_data:String):
 	if(multiplayer.is_server()):
 		var sender_id = multiplayer.get_remote_sender_id()
 		var data = JSON.parse_string(string_data)
