@@ -64,7 +64,7 @@ func set_input_tilt(tilt:float):
 	_input_tilt = tilt
 
 func set_input_jump(value:bool):
-	_jump = _jump
+	_jump = value
 	
 func _physics_process(delta: float) -> void:
 	var input_dir:Vector2 = Vector2.ZERO
