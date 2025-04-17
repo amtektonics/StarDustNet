@@ -60,6 +60,28 @@ func clear_all_sync_nodes():
 	_sync_nodes.clear()
 	_stored_frames.clear()
 
+#lag compensation helpers
+func compensate_lag_Vector3( last_vector:Vector3, new_vector:Vector3) -> Vector3:
+	var ping = NetController.get_ping_average(multiplayer.get_unique_id() )
+	var lerp_value = .25
+	if(ping > 4):
+		lerp_value = 1.0 / (ping) * (last_vector.distance_to(new_vector) * 4)
+	return last_vector.lerp(new_vector, lerp_value)
+
+func compensate_lag_Vector2( last_vector:Vector2, new_vector:Vector2) -> Vector2:
+	var ping = NetController.get_ping_average(multiplayer.get_unique_id() )
+	var lerp_value = .25
+	if(ping > 4):
+		lerp_value = 1.0 / (ping) * (last_vector.distance_to(new_vector) * 4)
+	return last_vector.lerp(new_vector, lerp_value)
+
+func compensate_lag_angle_float( last_value:float, new_value:float) -> float:
+	var ping = NetController.get_ping_average(multiplayer.get_unique_id() )
+	var lerp_value = .25
+	if(ping > 4):
+		lerp_value = 1.0 / (ping) * (angle_difference(last_value, new_value) * 4)
+	return lerp_angle(last_value, new_value, lerp_value)
+
 func _player_connected(id):
 	#nodes need to exist before they are syncronized
 	CreationController.sync_creation_new_player(id)

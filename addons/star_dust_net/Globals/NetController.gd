@@ -42,33 +42,33 @@ func _ready():
 		#Steam.lobby_match_list.connect(_steam_lobby_match_list)
 
 
-func _process(delta):
-	if(Engine.get_singleton("Steam")):
-		Steam.run_callbacks()
+#func _process(delta):
+	#if(Engine.get_singleton("Steam")):
+		#Steam.run_callbacks()
 
-func create_stun_server_room(server_addr:String, port:int):
-	var socket = PacketPeerUDP.new()
-	var status = socket.connect_to_host(server_addr, port)
-	if(status == OK):
-		socket.put_packet("create_room:0".to_ascii_buffer())
-		while true:
-			var game_code = socket.get_packet().get_string_from_ascii()
-			if(game_code != ""):
-				socket.put_packet("keep_alive".to_ascii_buffer())
-				return game_code
-				break
-				
-
-func get_room_info(server_addr:String, port:int, room_code:String):
-	var socket = PacketPeerUDP.new()
-	var status = socket.connect_to_host(server_addr, port)
-	if(status == OK):
-		socket.put_packet(("get_room:" + room_code).to_ascii_buffer())
-		while true:
-			var response = socket.get_packet().get_string_from_ascii()
-			if(response != ""):
-				return response
-				break
+#func create_stun_server_room(server_addr:String, port:int):
+	#var socket = PacketPeerUDP.new()
+	#var status = socket.connect_to_host(server_addr, port)
+	#if(status == OK):
+		#socket.put_packet("create_room:0".to_ascii_buffer())
+		#while true:
+			#var game_code = socket.get_packet().get_string_from_ascii()
+			#if(game_code != ""):
+				#socket.put_packet("keep_alive".to_ascii_buffer())
+				#return game_code
+				#break
+				#
+#
+#func get_room_info(server_addr:String, port:int, room_code:String):
+	#var socket = PacketPeerUDP.new()
+	#var status = socket.connect_to_host(server_addr, port)
+	#if(status == OK):
+		#socket.put_packet(("get_room:" + room_code).to_ascii_buffer())
+		#while true:
+			#var response = socket.get_packet().get_string_from_ascii()
+			#if(response != ""):
+				#return response
+				#break
 				
 
 
@@ -89,73 +89,73 @@ func start_web_server(port:int, tls=null):
 		multiplayer.multiplayer_peer = peer
 		_register_enet_server_signals()
 
-func start_steam_lobby(lobby_type, count):
-	if(Engine.has_singleton("Steam")):
-		var peer = SteamMultiplayerPeer.new()
-		peer.lobby_created.connect(_steam_lobby_created)
-		peer.lobby_kicked.connect(_steam_lobby_kicked)
-		peer.lobby_joined.connect(_steam_lobby_joined)
-		var status = peer.create_lobby(lobby_type, count)
-		if(status == OK):
-			multiplayer.multiplayer_peer = peer
-		return status
-
-func connect_steam_lobby(lobby_id):
-	if(Engine.has_singleton("Steam")):
-		var peer = SteamMultiplayerPeer.new()
-		peer.lobby_joined.connect(_steam_lobby_joined)
-		peer.lobby_kicked.connect(_steam_lobby_kicked)
-		var status = peer.join_lobby(lobby_id)
-		if(status == OK):
-			multiplayer.multiplayer_peer = peer
-		return status
-
-func get_steam_friends_lobbies():
-	if(Engine.has_singleton("Steam") && is_net_connected() && _steam_lobby_id != 0):
-		var count = Steam.getFriendCount(Steam.FRIEND_FLAG_IMMEDIATE)
-		var results = {}
-		for i in range(count):
-			var steam_id = Steam.getFriendByIndex(i,Steam.FRIEND_FLAG_IMMEDIATE)
-			var game_info = Steam.getFriendGamePlayed(steam_id)
-			if(game_info.is_empty()):
-				continue
-			else:
-				var app_id = game_info["id"]
-				var lobby = game_info["id"]
-				if(app_id != Steam.getAppID() or lobby is String):
-					continue
-				results[steam_id] = lobby
-		return results
-	return null
-
-func show_invite_overlay():
-	if(Engine.has_singleton("Steam") && is_net_connected() && _steam_lobby_id != 0):
-		Steam.activateGameOverlayInviteDialog(_steam_lobby_id)
+#func start_steam_lobby(lobby_type, count):
+	#if(Engine.has_singleton("Steam")):
+		#var peer = SteamMultiplayerPeer.new()
+		#peer.lobby_created.connect(_steam_lobby_created)
+		#peer.lobby_kicked.connect(_steam_lobby_kicked)
+		#peer.lobby_joined.connect(_steam_lobby_joined)
+		#var status = peer.create_lobby(lobby_type, count)
+		#if(status == OK):
+			#multiplayer.multiplayer_peer = peer
+		#return status
+#
+#func connect_steam_lobby(lobby_id):
+	#if(Engine.has_singleton("Steam")):
+		#var peer = SteamMultiplayerPeer.new()
+		#peer.lobby_joined.connect(_steam_lobby_joined)
+		#peer.lobby_kicked.connect(_steam_lobby_kicked)
+		#var status = peer.join_lobby(lobby_id)
+		#if(status == OK):
+			#multiplayer.multiplayer_peer = peer
+		#return status
+#
+#func get_steam_friends_lobbies():
+	#if(Engine.has_singleton("Steam") && is_net_connected() && _steam_lobby_id != 0):
+		#var count = Steam.getFriendCount(Steam.FRIEND_FLAG_IMMEDIATE)
+		#var results = {}
+		#for i in range(count):
+			#var steam_id = Steam.getFriendByIndex(i,Steam.FRIEND_FLAG_IMMEDIATE)
+			#var game_info = Steam.getFriendGamePlayed(steam_id)
+			#if(game_info.is_empty()):
+				#continue
+			#else:
+				#var app_id = game_info["id"]
+				#var lobby = game_info["id"]
+				#if(app_id != Steam.getAppID() or lobby is String):
+					#continue
+				#results[steam_id] = lobby
+		#return results
+	#return null
+#
+#func show_invite_overlay():
+	#if(Engine.has_singleton("Steam") && is_net_connected() && _steam_lobby_id != 0):
+		#Steam.activateGameOverlayInviteDialog(_steam_lobby_id)
 
 #--------------------------------------------
 #steam signals
-func _steam_lobby_created(connect:int, lobby_id:int):
-	if(connect == 1):
-		_steam_lobby_id = lobby_id
-		multiplayer.multiplayer_peer.set_lobby_joinable(true)
-		_is_connected = true
-		_connected_players.append(NetPlayerModel.new(1, {}))
-		emit_signal("server_started")
-	
-func _steam_lobby_joined(lobby: int, permissions: int, locked: bool, response: int):
-	_steam_lobby_id = lobby
-	print(permissions)
-	print(locked)
-	print(response)
-	emit_signal("connected_to_server")
-
-
-func _steam_lobby_kicked(lobby_id: int, admin_id: int, due_to_disconnect: int):
-	pass
-
-
-func _steam_lobby_invite(inviter: int, lobby: int, game: int):
-	print(inviter, lobby, game)
+#func _steam_lobby_created(connect:int, lobby_id:int):
+	#if(connect == 1):
+		#_steam_lobby_id = lobby_id
+		#multiplayer.multiplayer_peer.set_lobby_joinable(true)
+		#_is_connected = true
+		#_connected_players.append(NetPlayerModel.new(1, {}))
+		#emit_signal("server_started")
+	#
+#func _steam_lobby_joined(lobby: int, permissions: int, locked: bool, response: int):
+	#_steam_lobby_id = lobby
+	#print(permissions)
+	#print(locked)
+	#print(response)
+	#emit_signal("connected_to_server")
+#
+#
+#func _steam_lobby_kicked(lobby_id: int, admin_id: int, due_to_disconnect: int):
+	#pass
+#
+#
+#func _steam_lobby_invite(inviter: int, lobby: int, game: int):
+	#print(inviter, lobby, game)
 	
 #--------------------------------------------
 #straight forward peer server spinup

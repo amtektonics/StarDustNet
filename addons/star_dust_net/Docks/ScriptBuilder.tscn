@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://bbdgnn623rjc3"]
 
-[ext_resource type="Script" path="res://addons/star_dust_net/Docks/ScriptBuilderDock.gd" id="1_o8nue"]
+[ext_resource type="Script" uid="uid://chin20inkyt1c" path="res://addons/star_dust_net/Docks/ScriptBuilderDock.gd" id="1_o8nue"]
 [ext_resource type="PackedScene" uid="uid://dpoxjx5s6f2hl" path="res://addons/star_dust_net/Docks/PopupSyncControl.tscn" id="2_1ggre"]
 
 [node name="ScriptBuilder" type="Control"]
@@ -17,8 +17,8 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -169.5
-offset_right = 69.5
+offset_left = -119.5
+offset_right = 119.5
 offset_bottom = 133.0
 grow_horizontal = 2
 theme_override_constants/separation = 20

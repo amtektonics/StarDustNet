@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dpoxjx5s6f2hl"]
 
-[ext_resource type="Script" path="res://addons/star_dust_net/Docks/PopupSyncControl.gd" id="1_0sox8"]
+[ext_resource type="Script" uid="uid://bxy47ef26pl7k" path="res://addons/star_dust_net/Docks/PopupSyncControl.gd" id="1_0sox8"]
 
 [node name="PopupSyncControl" type="Control"]
 layout_mode = 3
