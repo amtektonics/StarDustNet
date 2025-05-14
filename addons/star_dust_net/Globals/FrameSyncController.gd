@@ -19,6 +19,9 @@ func _ready():
 	randomize()
 	NetController.player_connected.connect(_player_connected)
 
+##This funciton is called by the base Sync Node
+## a id is given to the node on the server then sent
+## to call clients and future clients
 func register_sync_node(node:SyncNode):
 	if(NetController.is_net_connected()):
 		if(multiplayer.is_server()):
@@ -27,6 +30,8 @@ func register_sync_node(node:SyncNode):
 			_sync_nodes.append(node)
 			rpc("_register_sync_node", node.get_path(), node.sync_id)
 
+##this is called when a server or client disconnects
+##
 func remove_sync_node(node_id:int):
 	for s:SyncNode in _sync_nodes:
 		if(s.sync_id == node_id):

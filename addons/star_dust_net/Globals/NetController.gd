@@ -1,5 +1,8 @@
 extends Node
 
+##Global Class For Creating Servers and Clients\
+##this class automatically keeps track of
+
 #player data
 var _connected_players:Array[NetPlayerModel] = []
 
@@ -19,20 +22,34 @@ var _client_setup_grace_period = 2.0
 
 var _steam_lobby_id = 0
 
+##This signal is for when a player connect to the server
+##paramater is a integer that is the peer id
 signal player_connected
 
+##This signal is for when a player disconnects from the server
+##paramater is a integer that is the peer id
 signal player_disconnected
 
+##When new data is provided about a player the server broadcasts
+##this signal to send out the updated player info to all clients
 signal players_updated
 
+##for when a client connects to a server
 signal connected_to_server
 
+##for when a client failed to connect to a server
 signal failed_to_connect
 
+##for when a client is disconnected by the server
+##this could be a kick or just a server crash
+#TODO add message that indicates the reason
 signal server_disconnected
 
+##when you first start a server as the server this signal emitts
 signal server_started
 
+##This gets fired off the disconnect from server function is called after
+##the sync nodes and creation nodes are disposed of
 signal peer_closed
 
 func _ready():
@@ -72,8 +89,8 @@ func _ready():
 				
 
 
+##This is only going to be used for web based applications and is currently in testing only
 ##format for this will be "ws://127.0.0.1:<Port>" wss:// for secure web socket
-##tlks is the options for security when using thsi
 func start_web_client(url:String, tls=null):
 	var peer = WebSocketMultiplayerPeer.new()
 	var status = peer.create_client(url, tls)
@@ -82,6 +99,7 @@ func start_web_client(url:String, tls=null):
 		_register_enet_client_signals()
 
 
+##This is only going to be used for web based applications and is currently in testing only
 func start_web_server(port:int, tls=null):
 	var peer = WebSocketMultiplayerPeer.new()
 	var status = peer.create_server(port, "*", tls)
@@ -158,8 +176,8 @@ func start_web_server(port:int, tls=null):
 	#print(inviter, lobby, game)
 	
 #--------------------------------------------
-#straight forward peer server spinup
-#the name system will be replaced with Steam names in the future
+
+##Start a server and connect it to the given port
 func start_enet_server(port:int):
 	var _multiplayer_peer = ENetMultiplayerPeer.new()
 	var status = _multiplayer_peer.create_server(port)
@@ -171,7 +189,7 @@ func start_enet_server(port:int):
 		emit_signal("server_started")
 	return status
 
-#straight forward peer client spinup
+##Start a client and connect to the given ip address and port
 func start_enet_client(ip_address:String, port:int):
 	var _multiplayer_peer = ENetMultiplayerPeer.new()
 	var status = _multiplayer_peer.create_client(ip_address, port)
@@ -181,11 +199,12 @@ func start_enet_client(ip_address:String, port:int):
 		_is_connected = true
 	return status
 
+##To be used by the client to update play specific metadata as a Dictionary
 func send_player_data(data:Dictionary):
 	for i in data:
 		rpc_id(1, "_set_player_data", i, data[i])
 
-#close for both server and client
+##Use this to shutdown a enet peer and dispose of everything correctly
 func close_network_enet_peer():
 	#clear this data first we won't need it anymore
 	#clean up the global nodes first
@@ -204,7 +223,11 @@ func close_network_enet_peer():
 		_is_connected = false
 		multiplayer.multiplayer_peer.close()
 
-#does a snapshot of pings to get an average over time
+
+
+##Ping is automatically calculated by StarDustNet
+##Use this to check to see how long a message takes to go from the server
+## to the client (This can be used by the clients and the server, server ping will be -1)
 func get_ping_average(peer_id:int):
 	if(_ping_history.has(peer_id)):
 		var count = 0
@@ -219,24 +242,27 @@ func get_ping_average(peer_id:int):
 	else:
 		return -1
 
-func get_all_player_data():
+##returns a array of all the connected players and their metadata
+func get_all_player_data() -> Array[NetPlayerModel]:
 	return _connected_players
 
 func get_current_tick():
 	return _ticks
-
+##If the player name has been registered with the server use this to get their name based off of their Godot peer ID
 func get_player_name(peer_id:int):
 	for p:NetPlayerModel in _connected_players:
 		if(p.peer_id == peer_id):
 			return p.player_name
 	return null
 
+##If the player name has been registered with the server use this to convert to the built in Godot peer Id system
 func get_player_peer_id(player_name:String):
 	for p:NetPlayerModel in _connected_players:
 		if(p.player_name == player_name):
 			return p.peer_id
 	return null
 
+##Check to see if a server or a client of any type has been created and is currently connected
 func is_net_connected():
 	return _is_connected
 
