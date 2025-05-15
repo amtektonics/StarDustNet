@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://dvrmgb5u2ij11"]
+
+[ext_resource type="Script" uid="uid://bjy27k7nlghs1" path="res://Demo/FPSDemo/fps_player.gd" id="1_5ru31"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5q4q8"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_5ru31"]
+size = Vector3(0.5, 0.5, 0.5)
+
+[node name="SDFPSNetBody3D" type="CharacterBody3D" node_paths=PackedStringArray("Camera")]
+script = ExtResource("1_5ru31")
+Camera = NodePath("Camera3D")
+metadata/_custom_type_script = "uid://ch7miikjsb4rx"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_5q4q8")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.676204, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_5ru31")

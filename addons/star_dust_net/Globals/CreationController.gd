@@ -17,6 +17,7 @@ func create_net_node(res_path:String, scene_path:String, args:String):
 
 
 
+
 #this should be used on the server to send a removal request to all clients
 func remove_net_node(res_id:int):
 	if(multiplayer.is_server()):

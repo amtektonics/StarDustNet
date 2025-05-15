@@ -1,0 +1,84 @@
+[gd_scene load_steps=4 format=3 uid="uid://ci5yvyllr6pk8"]
+
+[ext_resource type="Script" uid="uid://d0rra4iyfxf46" path="res://Demo/Stress Testing/StressTest.gd" id="1_ty8nh"]
+[ext_resource type="Script" uid="uid://cutwfyg1u6s28" path="res://Demo/FPSDemo/menu.gd" id="2_5kopp"]
+[ext_resource type="Script" uid="uid://uoegpmyqqrh0" path="res://NetNodes/SyncNodes/StressTestSyncNode.gd" id="3_5kopp"]
+
+[node name="StressTest" type="Node"]
+script = ExtResource("1_ty8nh")
+
+[node name="Menu" type="CanvasLayer" parent="." node_paths=PackedStringArray("address", "port")]
+script = ExtResource("2_5kopp")
+address = NodePath("Address")
+port = NodePath("Port")
+
+[node name="Address" type="LineEdit" parent="Menu"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -75.0
+offset_top = -87.5
+offset_right = 75.0
+offset_bottom = -56.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "127.0.0.1"
+alignment = 1
+
+[node name="Port" type="LineEdit" parent="Menu"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -75.0
+offset_top = -53.5
+offset_right = 75.0
+offset_bottom = -22.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "42010"
+alignment = 1
+
+[node name="Host" type="Button" parent="Menu"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -15.5
+offset_right = 50.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "Host"
+
+[node name="Join" type="Button" parent="Menu"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = 24.5
+offset_right = 50.0
+offset_bottom = 55.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "Join"
+
+[node name="ConnectedMenu" type="CanvasLayer" parent="."]
+
+[node name="StressTestSyncNode" type="Node" parent="ConnectedMenu"]
+script = ExtResource("3_5kopp")
+server_byte_count = 10000
+client_byte_count = 10000
+send_from_server = true
+send_from_client = true
+metadata/_custom_type_script = "uid://uoegpmyqqrh0"
+
+[connection signal="pressed" from="Menu/Host" to="Menu" method="_on_host_pressed"]
+[connection signal="pressed" from="Menu/Join" to="Menu" method="_on_join_pressed"]
