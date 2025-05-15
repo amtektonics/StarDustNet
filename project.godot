@@ -16,18 +16,11 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-NetController="*res://addons/star_dust_net/Globals/NetController.gd"
-FrameSyncController="*res://addons/star_dust_net/Globals/FrameSyncController.gd"
-CreationController="*res://addons/star_dust_net/Globals/CreationController.gd"
-StarDustUtil="*res://addons/star_dust_net/Globals/StarDustUtils.gd"
+SdnController="*res://addons/star_dust_net/Globals/SDNController.gd"
 
 [debug]
 
 file_logging/enable_file_logging=true
-
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/star_dust_net/plugin.cfg")
 
 [input]
 
